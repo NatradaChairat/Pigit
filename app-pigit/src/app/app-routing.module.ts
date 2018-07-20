@@ -9,6 +9,7 @@ const appRoutes: Routes= [
   {path: 'detail/:id', component: ViewProductComponent},
   {path: 'add', component: AddProductComponent},
   {path: 'list', component: ListProductComponent},
+
   {path: '**', component: FilenotfoundComponent}
 ];
 @NgModule({

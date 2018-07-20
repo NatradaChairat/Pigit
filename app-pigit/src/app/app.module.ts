@@ -10,6 +10,7 @@ import { ListProductComponent } from './product/list-product/list-product.compon
 import { ViewProductComponent } from './product/view-product/view-product.component';
 import { PreorderComponent } from './preorder/preorder.component';
 import { LoginComponent } from './login/login.component';
+import { NavigatorBarComponent } from './navigator-bar/navigator-bar.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { LoginComponent } from './login/login.component';
     ListProductComponent,
     ViewProductComponent,
     PreorderComponent,
-    LoginComponent
+    LoginComponent,
+    NavigatorBarComponent
   ],
   imports: [
     BrowserModule, AppRoutingModule
