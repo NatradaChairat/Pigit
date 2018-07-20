@@ -1,8 +1,63 @@
-<div>
-  <label for="uploadImg">UPLOAD PICTURE:</label>
-  <input type="file" name="uploadImg" id="uploadImg"
+<div class="col-md-6 col-md-offset-6">
+
+  <div class="float-left">
+    <br>
+    <div>
+      <img [src]="picture"  height="200">
+    </div>
+    <br>
+    <div class="custom-file">
+      <label class="custom-file-label" for="customFile">Choose file</label>
+      <input type="file" class="custom-file-input" id="customFile"
+      (change)="onSelectFile($event)" >
+
+    </div>
+  </div>
+
+  <div class="float-right">
+    <form>
+      <br>
+      <div class="form-row">
+
+        <label for="productName">Product Name:</label>
+        <input type="text" class="form-control" id="productName"
+               placeholder="Product Name" required>
+
+      </div>
 
 
-  />
+      <!----------------------->
+      <div class="form-row">
+
+        <label for="productName">Product Name:</label>
+        <textarea class="form-control" id="description"
+                  placeholder="Product Description" required
+                  rows="5">
+          </textarea>
+
+      </div>
+
+      <!----------------------->
+      <div class="form-row">
+
+        <label for="Price">Price:</label>
+        <input class="form-control" id="Price"
+               placeholder="Price" required
+        />
+      </div>
+      <!----------------------->
+      <div class="form-row">
+
+        <label for="Barcode">Price:</label>
+        <input class="form-control" id="Barcode"
+               placeholder="Barcode" required
+        />
+      </div>
+      <!----------------------->
+      <br>
+      <button class="btn btn-primary" type="submit">Submit form</button>
+    </form>
+
+  </div>
 
 </div>
