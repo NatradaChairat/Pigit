@@ -1,6 +1,8 @@
 package camt.se.pigit.controller;
 
 import camt.se.pigit.entity.Product;
+import camt.se.pigit.service.EmailService;
+import camt.se.pigit.service.EmailServiceImpl;
 import camt.se.pigit.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,16 @@ public class ProductController {
     public ResponseEntity<?> uploadProduct(@RequestBody Product product){
         LOGGER.info("uploadProduct(): "+product);
         productService.addProduct(product);
+        return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+   // int quantity,String name, String email, String addInfo
+    @PostMapping("product/preorder")
+    public ResponseEntity<?> preorderProduct(@RequestBody Product product, @RequestBody int quantity,@RequestBody String name,@RequestBody String email, @RequestBody String addInfo ){
+        LOGGER.info("preorder product(): "+product);
+        LOGGER.info("quantity: "+quantity);
+        LOGGER.info("Customer name: "+name +" email: "+email+" addInfo:"+addInfo);
+        EmailService emailService = new EmailServiceImpl();
+        emailService.sendEmail(product,quantity,name,email,addInfo);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 }
