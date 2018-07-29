@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+
 @Repository
 public class ProductDaoImpl implements ProductDao {
 
@@ -31,7 +33,6 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public List<Product> getProducts() {
         List<Product> products  = new ArrayList<Product>();
-        CountDownLatch signal = new CountDownLatch(1);
         try {
             databaseReference.child("product").orderByKey().addValueEventListener(new ValueEventListener() {
                 @Override
@@ -75,7 +76,7 @@ public class ProductDaoImpl implements ProductDao {
                 }
             });
 
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -156,12 +157,34 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> findNameIgnoreCaseContaining(String searchText) {
-        List<Product> products = null;
+        List<Product> result = new ArrayList<Product>();
+        List<Product> products = getProducts();
+        LOGGOR.info("Products "+products);
 
-        databaseReference.child("product").orderByChild("name").equalTo(searchText).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                LOGGOR.info("Name: "+snapshot);
+        for(int i=0;i<products.size();i++) {
+            System.out.println(" " + i + " " + products.get(i).getName().contains(searchText));
+
+            if(products.get(i).getName().contains(searchText)) {
+                databaseReference.child("product").orderByChild("name").equalTo(products.get(i).getName()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        LOGGOR.info("Snapshot: " + snapshot);
+                        Product product = new Product();
+
+                        String barcodenumber = snapshot.getValue().toString().substring(1, 14);
+                        System.out.println("barcode "+barcodenumber);
+                        LOGGOR.info("Show key: " + snapshot.child(barcodenumber).getKey());
+                        product.setBarcodenumber(snapshot.child(barcodenumber).getKey());
+                        product.setName((String) snapshot.child(barcodenumber).child("name").getValue());
+                        LOGGOR.info("Show name: " + snapshot.child(barcodenumber).child("name").getValue());
+                        product.setDescription((String) snapshot.child(barcodenumber).child("description").getValue());
+                        LOGGOR.info("Show description: " + snapshot.child(barcodenumber).child("description").getValue());
+                        product.setImage((String) snapshot.child(barcodenumber).child("image").getValue());
+                        LOGGOR.info("Show image: " + snapshot.child(barcodenumber).child("image").getValue());
+                        product.setPrice(snapshot.child(barcodenumber).child("price").getValue(Double.class));
+                        LOGGOR.info("Show price: " + snapshot.child(barcodenumber).child("price").getValue());
+                        result.add(product);
+
                 /*LOGGOR.info("findByBarcodenumber(): "+snapshot.toString());
                 products.setBarcodenumber(barcodenumber);
                 String _name = (String) snapshot.child(barcodenumber).child("name").getValue();
@@ -177,13 +200,15 @@ public class ProductDaoImpl implements ProductDao {
                 LOGGOR.info(String.valueOf(_price));
                 products.setPrice(_price);*/
 
-            }
+                    }
 
-            @Override
-            public void onCancelled(DatabaseError error) {
+                    @Override
+                    public void onCancelled(DatabaseError error) {
 
+                    }
+                });
             }
-        });
+        }
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -193,7 +218,8 @@ public class ProductDaoImpl implements ProductDao {
             /*if(products.getName()!=null) {
                 return products;
             }else return null;*/
-            return products;
+            return result;
         }
+
     }
 }
