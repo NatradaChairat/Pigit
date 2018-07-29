@@ -38,8 +38,9 @@ public class ProductDaoImpl implements ProductDao {
                 public void onDataChange(DataSnapshot snapshot) {
                     LOGGOR.info("Show snapshot: " + snapshot.toString());
                     LOGGOR.info("Show count: " + snapshot.getChildrenCount());
-                    Product product = new Product();
+
                     for(DataSnapshot data: snapshot.getChildren()){
+                        Product product = new Product();
                         LOGGOR.info("Show key: " + data.getKey());
                         product.setBarcodenumber(data.getKey());
                         product.setName((String) data.child("name").getValue());
@@ -48,8 +49,9 @@ public class ProductDaoImpl implements ProductDao {
                         LOGGOR.info("Show description: " + data.child("description").getValue());
                         product.setImage((String) data.child("image").getValue());
                         LOGGOR.info("Show image: " + data.child("image").getValue());
-                        product.setPrice((Double) data.child("price").getValue());
+                        product.setPrice(data.child("price").getValue(Double.class));
                         LOGGOR.info("Show price: " + data.child("price").getValue());
+
                         LOGGOR.info("Product: "+product);
                         products.add(product);
                         LOGGOR.info("Products: "+products);
