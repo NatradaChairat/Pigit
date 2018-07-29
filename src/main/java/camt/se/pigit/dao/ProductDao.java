@@ -10,4 +10,6 @@ public interface ProductDao {
     Boolean removeProduct(String barcodenumber);
     Product findByBarcodenumber(String barcodenumber);
 
+    List<Product> findNameIgnoreCaseContaining(String searchText);
+
 }

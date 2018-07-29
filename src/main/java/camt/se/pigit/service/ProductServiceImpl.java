@@ -33,5 +33,10 @@ public class ProductServiceImpl implements ProductService {
         return productDao.findByBarcodenumber(barcodeNumber);
     }
 
+    @Override
+    public List<Product> findNameIgnoreCaseContaining(String searchText) {
+        return productDao.findNameIgnoreCaseContaining(searchText);
+    }
+
 
 }

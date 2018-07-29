@@ -11,12 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 @Repository
 public class ProductDaoImpl implements ProductDao {
+
     Logger LOGGOR = LoggerFactory.getLogger(ProductDaoImpl.class.getName());
     DatabaseReference databaseReference;
 
@@ -27,21 +30,41 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> getProducts() {
-        List<Product> products = null;
-
+        List<Product> products  = new ArrayList<Product>();
+        CountDownLatch signal = new CountDownLatch(1);
+        try {
             databaseReference.child("product").orderByKey().addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     LOGGOR.info("Show snapshot: " + snapshot.toString());
-                    for (DataSnapshot data : snapshot.getChildren()) {
-                        Product product = new Product();
+                    LOGGOR.info("Show count: " + snapshot.getChildrenCount());
+                    Product product = new Product();
+                    for(DataSnapshot data: snapshot.getChildren()){
                         LOGGOR.info("Show key: " + data.getKey());
+                        product.setBarcodenumber(data.getKey());
+                        product.setName((String) data.child("name").getValue());
+                        LOGGOR.info("Show name: " + data.child("name").getValue());
+                        product.setDescription((String) data.child("description").getValue());
+                        LOGGOR.info("Show description: " + data.child("description").getValue());
+                        product.setImage((String) data.child("image").getValue());
+                        LOGGOR.info("Show image: " + data.child("image").getValue());
+                        product.setPrice((Double) data.child("price").getValue());
+                        LOGGOR.info("Show price: " + data.child("price").getValue());
+                        LOGGOR.info("Product: "+product);
+                        products.add(product);
+                        LOGGOR.info("Products: "+products);
+
+                    }
+
+                    /*for (int i = 0; i<snapshot.getChildrenCount(); i++) {
+                        Product product = new Product();
+                        LOGGOR.info("Show key: " + snapshot.);
                         product.setBarcodenumber(data.getKey());
                         LOGGOR.info("Show Product: " + product.toString());
                         products.add(product);
                         LOGGOR.info("Show Products: " + products.toString());
+                    }*/
 
-                    }
                 }
 
                 @Override
@@ -49,7 +72,13 @@ public class ProductDaoImpl implements ProductDao {
 
                 }
             });
-            return null;
+
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        LOGGOR.info("Products: "+products);
+        return products;
     }
 
     @Override
@@ -104,7 +133,6 @@ public class ProductDaoImpl implements ProductDao {
                LOGGOR.info(String.valueOf(_price));
                product.setPrice(_price);
 
-
             }
 
             @Override
@@ -121,6 +149,49 @@ public class ProductDaoImpl implements ProductDao {
             if(product.getName()!=null) {
                 return product;
             }else return null;
+        }
+    }
+
+    @Override
+    public List<Product> findNameIgnoreCaseContaining(String searchText) {
+        List<Product> products = null;
+
+        databaseReference.child("product").orderByChild("name").equalTo(searchText).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                LOGGOR.info("Name: "+snapshot);
+                /*LOGGOR.info("findByBarcodenumber(): "+snapshot.toString());
+                products.setBarcodenumber(barcodenumber);
+                String _name = (String) snapshot.child(barcodenumber).child("name").getValue();
+                LOGGOR.info(_name);
+                products.setName(_name);
+                String _description = (String) snapshot.child(barcodenumber).child("description").getValue();
+                LOGGOR.info(_description);
+                products.setDescription(_description);
+                String _image = (String) snapshot.child(barcodenumber).child("image").getValue();
+                LOGGOR.info(_image);
+                products.setImage(_image);
+                double _price = (Double) snapshot.child(barcodenumber).child("price").getValue();
+                LOGGOR.info(String.valueOf(_price));
+                products.setPrice(_price);*/
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }finally {
+            //LOGGOR.info(products.toString());
+            /*if(products.getName()!=null) {
+                return products;
+            }else return null;*/
+            return products;
         }
     }
 }

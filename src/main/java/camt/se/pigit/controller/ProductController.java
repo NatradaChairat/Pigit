@@ -35,8 +35,14 @@ public class ProductController {
         }
     }
     @GetMapping("/product")
-    public ResponseEntity<?> getProduct(){
+    public ResponseEntity<?> getProducts(){
         List<Product> products = productService.getProducts();
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/product/{searchText}")
+    public ResponseEntity<?> getProductsByName(@PathVariable("searchText")String searchText){
+        List<Product> products = productService.findNameIgnoreCaseContaining(searchText);
         return ResponseEntity.ok(products);
     }
 
@@ -63,4 +69,6 @@ public class ProductController {
         emailService.sendEmail(product,quantity,name,email,addInfo);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
+
+
 }

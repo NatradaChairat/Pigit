@@ -9,4 +9,5 @@ public interface ProductService {
     Product addProduct(Product product);
     Boolean remove(String barcodenumber);
     Product findProductByBarcodenumber(String barcodeNumber);
+    List<Product> findNameIgnoreCaseContaining(String searchText);
 }
